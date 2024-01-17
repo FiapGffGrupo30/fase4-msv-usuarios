@@ -125,6 +125,16 @@ class CustomerServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenTryToAddADoubleMainAddress() {
+        String addressId = UUID.randomUUID().toString();
+        Customer customer = createCustomerWithAddress(addressId);
+        Address address = new Address(addressId, null, "5",
+                null, null, null, null, true);
+        when(repository.findById(1L)).thenReturn(Optional.of(customer));
+        assertThrows(CustomerException.class, () -> service.addAddress(1L, address));
+    }
+
+    @Test
     void shouldUpdateAddress() {
         String addressId = UUID.randomUUID().toString();
         Customer customer = createCustomerWithAddress(addressId);
@@ -147,6 +157,30 @@ class CustomerServiceTest {
                 .orElse(null);
     }
 
+    @Test
+    void shouldDeleteCustomerAddress() {
+        String addressId = UUID.randomUUID().toString();
+        Customer customer = createCustomerWithAddress(addressId);
+        when(repository.findById(1L)).thenReturn(Optional.of(customer));
+        when(repository.save(any(Customer.class))).thenReturn(customer);
+        when(repository.existsById(1L)).thenReturn(true);
+        Customer updatedCustomer = service.deleteAddress(1L, addressId);
+        assertEquals(0, updatedCustomer.person().addresses().size());
+    }
+
+    @Test
+    void shouldAddPhoneToCustomer() {
+        String phoneId = UUID.randomUUID().toString();
+        Customer customer = createCustomer(1L);
+        Phone phone = new Phone(phoneId, 79, 999999999, true);
+        when(repository.findById(1L)).thenReturn(Optional.of(customer));
+        when(repository.save(any(Customer.class))).thenReturn(customer);
+        when(repository.existsById(1L)).thenReturn(true);
+        Customer updatedCustomer = service.addPhone(1L, phone);
+        assertEquals(999999999, getPhone(updatedCustomer, phoneId));
+    }
+    
+    @Test
     void shoudUpdatePhone() {
         String phoneId = UUID.randomUUID().toString();
         Customer customer = createCustomerWithPhone(phoneId);
@@ -166,6 +200,18 @@ class CustomerServiceTest {
                 .map(Phone::number)
                 .findAny()
                 .orElse(null);
+    }
+
+
+    @Test
+    void shouldDeleteCustomerPhone() {
+        String phoneId = UUID.randomUUID().toString();
+        Customer customer = createCustomerWithPhone(phoneId);
+        when(repository.findById(1L)).thenReturn(Optional.of(customer));
+        when(repository.save(any(Customer.class))).thenReturn(customer);
+        when(repository.existsById(1L)).thenReturn(true);
+        Customer updatedCustomer = service.deletePhone(1L, phoneId);
+        assertEquals(0, updatedCustomer.person().phones().size());
     }
 
     // region [DATA]
