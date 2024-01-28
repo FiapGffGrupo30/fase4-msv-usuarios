@@ -1,5 +1,3 @@
--- liquibase formatted sql
--- changeset marcus:0001.1
 create table tb_customer (id bigint not null auto_increment, username varchar(50), credit_card varchar(150), document varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), primary key (id)) engine=InnoDB;
 create table tb_customer_addresses (main bit, customer_model_id bigint not null, city varchar(10), state varchar(10), building_number varchar(50), zipcode varchar(50), address_id varchar(255), complement varchar(255), line varchar(255)) engine=InnoDB;
 create table tb_customer_phones (area_code integer, main bit, number integer, customer_model_id bigint not null, phone_id varchar(255)) engine=InnoDB;
