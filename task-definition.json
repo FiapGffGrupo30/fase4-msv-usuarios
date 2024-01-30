@@ -1,0 +1,60 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:571192913109:task-definition/gff-task-definition-usuarios:2",
+    "containerDefinitions": [
+        {
+            "name": "gff-task-usuarios",
+            "image": "571192913109.dkr.ecr.us-east-1.amazonaws.com/gff-repository-usuarios",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "gff-usuarios-8080-tcp",
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": []
+        }
+    ],
+    "family": "gff-task-definition-usuarios",
+    "taskRoleArn": "arn:aws:iam::571192913109:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::571192913109:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "registeredAt": "2024-01-30T02:25:23.089Z",
+    "registeredBy": "arn:aws:iam::571192913109:root",
+    "tags": []
+}
