@@ -50,7 +50,7 @@ jobs:
       run: |
         ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY=gff-repository-usuarios
-        IMAGE_TAG=latest
+        IMAGE_TAG=${{ github.sha }}
 
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
