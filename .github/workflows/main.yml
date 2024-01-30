@@ -1,4 +1,4 @@
-name: Java CI/CD to pagamento
+name: Java CI/CD to usuarios
 
 on:
   push:
