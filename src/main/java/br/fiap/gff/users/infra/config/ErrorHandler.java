@@ -1,6 +1,6 @@
 package br.fiap.gff.users.infra.config;
 
-import br.fiap.gff.users.domain.customer.exceptions.CustomerException;
+import br.fiap.gff.users.domain.exceptions.CustomerException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

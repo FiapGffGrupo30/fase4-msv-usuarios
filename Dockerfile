@@ -12,4 +12,5 @@ RUN mvn -f /home/app/pom.xml clean package
 FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
 COPY --from=build home/app/target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENV JVM_ARGS="-Dspring.profiles.active=prod"
+ENTRYPOINT ["java","-jar","${JVM_ARGS}","/app.jar"]

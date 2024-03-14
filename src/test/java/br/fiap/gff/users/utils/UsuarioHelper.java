@@ -1,13 +1,13 @@
 package br.fiap.gff.users.utils;
 
-import br.fiap.gff.users.controllers.dto.CreateCustomerDTO;
-import br.fiap.gff.users.controllers.dto.CreatePhoneDTO;
-import br.fiap.gff.users.controllers.dto.RequestAddressDTO;
-import br.fiap.gff.users.domain.customer.entities.Customer;
-import br.fiap.gff.users.domain.person.Address;
-import br.fiap.gff.users.domain.person.Name;
-import br.fiap.gff.users.domain.person.Person;
-import br.fiap.gff.users.domain.person.Phone;
+import br.fiap.gff.users.application.dto.CreateCustomerDTO;
+import br.fiap.gff.users.application.dto.CreatePhoneDTO;
+import br.fiap.gff.users.application.dto.RequestAddressDTO;
+import br.fiap.gff.users.domain.entities.Customer;
+import br.fiap.gff.users.domain.entities.Address;
+import br.fiap.gff.users.domain.entities.Name;
+import br.fiap.gff.users.domain.entities.Person;
+import br.fiap.gff.users.domain.entities.Phone;
 
 import java.util.ArrayList;
 import java.util.List;
