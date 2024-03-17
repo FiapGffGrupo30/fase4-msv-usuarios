@@ -25,6 +25,7 @@ public class OrderDTO {
         ).toList();
         return Order.builder()
                 .items(items)
+                .status("SENT")
                 .build();
     }
 }

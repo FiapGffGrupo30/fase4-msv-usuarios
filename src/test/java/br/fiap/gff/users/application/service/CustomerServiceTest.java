@@ -3,8 +3,8 @@ package br.fiap.gff.users.application.service;
 import br.fiap.gff.users.domain.entities.*;
 import br.fiap.gff.users.domain.exceptions.CustomerException;
 import br.fiap.gff.users.domain.ports.CustomerDatabasePort;
+import br.fiap.gff.users.domain.ports.OrderBrokerPort;
 import br.fiap.gff.users.domain.usecases.service.CustomerService;
-import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +25,11 @@ class CustomerServiceTest {
     @Mock
     CustomerDatabasePort databasePort;
     @Mock
-    SqsTemplate sqsTemplate;
+    OrderBrokerPort orderBrokerPort;
 
     @BeforeEach
     public void init() {
-        service = new CustomerService(databasePort, sqsTemplate);
+        service = new CustomerService(databasePort, orderBrokerPort);
     }
 
     @Test

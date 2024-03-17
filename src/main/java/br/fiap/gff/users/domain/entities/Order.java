@@ -11,10 +11,12 @@ import java.util.UUID;
 public class Order {
 
     private UUID userId;
+    private String orderId;
     private String nickName;
     private boolean anonymous;
     private List<Item> items;
     private String status;
+    private double totalPrice;
 
     @Data
     @Builder

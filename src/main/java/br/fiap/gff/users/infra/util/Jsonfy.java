@@ -8,4 +8,8 @@ public class Jsonfy {
     public static String parse(Object o) {
         return new Gson().toJson(o);
     }
+
+    public static <T> T parse(String json, Class<T> clazz) {
+        return new Gson().fromJson(json, clazz);
+    }
 }

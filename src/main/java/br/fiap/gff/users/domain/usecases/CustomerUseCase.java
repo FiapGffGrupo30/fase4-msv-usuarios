@@ -33,4 +33,6 @@ public interface CustomerUseCase {
     Customer deletePhone(UUID id, String phoneId);
 
     void sendOrder(UUID id, Order order);
+
+    void processOrder(Order order);
 }

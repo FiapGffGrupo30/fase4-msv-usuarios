@@ -117,4 +117,10 @@ public class CustomerService implements CustomerUseCase {
 
         orderBroker.sendMessage(order);
     }
+
+    @Override
+    public void processOrder(Order order) {
+        // Notificar o cliente
+        System.out.println("order of id " + order.getOrderId() + " processedd");
+    }
 }
