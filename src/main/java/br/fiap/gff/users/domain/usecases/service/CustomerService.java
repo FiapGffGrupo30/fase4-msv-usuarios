@@ -6,9 +6,8 @@ import br.fiap.gff.users.domain.entities.Order;
 import br.fiap.gff.users.domain.entities.Phone;
 import br.fiap.gff.users.domain.exceptions.CustomerException;
 import br.fiap.gff.users.domain.ports.CustomerDatabasePort;
+import br.fiap.gff.users.domain.ports.OrderBrokerPort;
 import br.fiap.gff.users.domain.usecases.CustomerUseCase;
-import br.fiap.gff.users.infra.util.Jsonfy;
-import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,7 @@ import java.util.UUID;
 public class CustomerService implements CustomerUseCase {
 
     private final CustomerDatabasePort databasePort;
-    private final SqsTemplate sqsTemplate;
-
+    private final OrderBrokerPort orderBroker;
 
     @Override
     public Customer getById(UUID id) {
@@ -117,7 +115,6 @@ public class CustomerService implements CustomerUseCase {
             order.setAnonymous(true);
         }
 
-        String message = Jsonfy.parse(order);
-        sqsTemplate.send(options -> options.queue("gff-orders").payload(message));
+        orderBroker.sendMessage(order);
     }
 }
