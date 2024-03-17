@@ -7,12 +7,13 @@ import br.fiap.gff.users.domain.entities.Phone;
 import br.fiap.gff.users.domain.exceptions.CustomerException;
 import br.fiap.gff.users.domain.ports.CustomerDatabasePort;
 import br.fiap.gff.users.domain.usecases.CustomerUseCase;
-import com.google.gson.Gson;
+import br.fiap.gff.users.infra.util.Jsonfy;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -105,8 +106,18 @@ public class CustomerService implements CustomerUseCase {
 
     @Override
     public void sendOrder(UUID id, Order order) {
-        Gson gson = new Gson();
-        String message = gson.toJson(order);
+
+        if (Objects.nonNull(id)) {
+            Customer c = getById(id);
+            order.setUserId(id);
+            order.setNickName(c.username());
+            order.setAnonymous(false);
+        } else {
+            order.setUserId(UUID.randomUUID());
+            order.setAnonymous(true);
+        }
+
+        String message = Jsonfy.parse(order);
         sqsTemplate.send(options -> options.queue("gff-orders").payload(message));
     }
 }

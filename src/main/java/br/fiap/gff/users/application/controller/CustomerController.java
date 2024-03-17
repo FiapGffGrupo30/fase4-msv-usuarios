@@ -1,9 +1,6 @@
 package br.fiap.gff.users.application.controller;
 
-import br.fiap.gff.users.application.dto.CreateCustomerDTO;
-import br.fiap.gff.users.application.dto.CreatePhoneDTO;
-import br.fiap.gff.users.application.dto.CustomerResponseDTO;
-import br.fiap.gff.users.application.dto.RequestAddressDTO;
+import br.fiap.gff.users.application.dto.*;
 import br.fiap.gff.users.domain.entities.Address;
 import br.fiap.gff.users.domain.entities.Customer;
 import br.fiap.gff.users.domain.entities.Order;
@@ -53,8 +50,8 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/send-order")
-    public boolean sendMessage(@PathVariable UUID id, @RequestBody Order order) {
-        customer.sendOrder(id, order);
+    public boolean sendMessage(@PathVariable UUID id, @RequestBody OrderDTO orderDTO) {
+        customer.sendOrder(id, orderDTO.toOrder());
         return true;
     }
 
