@@ -4,10 +4,11 @@ import br.fiap.gff.users.domain.exceptions.CustomerException;
 import lombok.Builder;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Builder(toBuilder = true)
 public record Customer(
-        Long id,
+        UUID id,
         Person person,
         String username,
         String creditCard) {

@@ -1,14 +1,16 @@
 package br.fiap.gff.users.domain.usecases;
 
-import br.fiap.gff.users.domain.entities.Customer;
 import br.fiap.gff.users.domain.entities.Address;
+import br.fiap.gff.users.domain.entities.Customer;
+import br.fiap.gff.users.domain.entities.Order;
 import br.fiap.gff.users.domain.entities.Phone;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CustomerUseCase {
 
-    Customer getById(Long id);
+    Customer getById(UUID id);
 
     List<Customer> getAll();
 
@@ -16,17 +18,19 @@ public interface CustomerUseCase {
 
     Customer update(Customer c);
 
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
-    Customer addAddress(Long id, Address a);
+    Customer addAddress(UUID id, Address a);
 
-    Customer updateAddress(Long id, Address a);
+    Customer updateAddress(UUID id, Address a);
 
-    Customer deleteAddress(Long id, String addressId);
+    Customer deleteAddress(UUID id, String addressId);
 
-    Customer addPhone(Long id, Phone p);
+    Customer addPhone(UUID id, Phone p);
 
-    Customer updatePhone(Long id, Phone p);
+    Customer updatePhone(UUID id, Phone p);
 
-    Customer deletePhone(Long id, String phoneId);
+    Customer deletePhone(UUID id, String phoneId);
+
+    void sendOrder(UUID id, Order order);
 }

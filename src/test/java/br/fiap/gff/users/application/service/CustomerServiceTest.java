@@ -3,6 +3,8 @@ package br.fiap.gff.users.application.service;
 import br.fiap.gff.users.domain.entities.*;
 import br.fiap.gff.users.domain.exceptions.CustomerException;
 import br.fiap.gff.users.domain.ports.CustomerDatabasePort;
+import br.fiap.gff.users.domain.usecases.service.CustomerService;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,29 +24,31 @@ class CustomerServiceTest {
     private CustomerService service;
     @Mock
     CustomerDatabasePort databasePort;
+    @Mock
+    SqsTemplate sqsTemplate;
 
     @BeforeEach
     public void init() {
-        service = new CustomerService(databasePort);
+        service = new CustomerService(databasePort, sqsTemplate);
     }
 
     @Test
     void shouldGetACustomerById() {
-        Customer c = createCustomer(1L);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(c));
-        Customer act = service.getById(1L);
+        Customer c = createCustomer(UUID.randomUUID());
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(c));
+        Customer act = service.getById(UUID.randomUUID());
         assertEquals(act, c);
     }
 
     @Test
     void shouldThrowExceptionWhenGetACustomerById() {
-        when(databasePort.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(CustomerException.class, () -> service.getById(1L));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.empty());
+        assertThrows(CustomerException.class, () -> service.getById(UUID.randomUUID()));
     }
 
     @Test
     void shouldGetAllCustomers() {
-        List<Customer> customers = List.of(createCustomer(1L));
+        List<Customer> customers = List.of(createCustomer(UUID.randomUUID()));
         when(databasePort.findAll()).thenReturn(customers);
         List<Customer> act = service.getAll();
         assertEquals(customers, act);
@@ -53,7 +57,7 @@ class CustomerServiceTest {
     @Test
     void shouldCreateACustomer() {
         Customer c = createCustomer(null);
-        Customer customerWithId = createCustomer(1L);
+        Customer customerWithId = createCustomer(UUID.randomUUID());
         when(databasePort.save(c)).thenReturn(customerWithId);
         Customer act = service.create(c);
         assertEquals(act, customerWithId);
@@ -61,14 +65,14 @@ class CustomerServiceTest {
 
     @Test
     void shoudlThrowExceptionWhenTryCreateCustomerWithId() {
-        Customer c = createCustomer(1L);
+        Customer c = createCustomer(UUID.randomUUID());
         assertThrows(CustomerException.class, () -> service.create(c));
     }
 
     @Test
     void shouldUpdateACustomer() {
-        Customer c = createCustomer(1L);
-        when(databasePort.existsById(1L)).thenReturn(true);
+        Customer c = createCustomer(UUID.randomUUID());
+        when(databasePort.existsById(c.id())).thenReturn(true);
         when(databasePort.save(any(Customer.class))).thenReturn(c);
         Customer act = service.update(c);
         assertEquals(act, c);
@@ -82,34 +86,35 @@ class CustomerServiceTest {
 
     @Test
     void shouldThrowExceptionWhenTryToUpdateCustomerNotExists() {
-        Customer c = createCustomer(1L);
-        when(databasePort.existsById(1L)).thenReturn(false);
+        Customer c = createCustomer(UUID.randomUUID());
+        when(databasePort.existsById(any(UUID.class))).thenReturn(false);
         assertThrows(CustomerException.class, () -> service.update(c));
     }
 
     @Test
     void shouldDeleteACustomer() {
-        when(databasePort.existsById(1L)).thenReturn(true);
-        service.deleteById(1L);
-        verify(databasePort, times(1)).deleteById(1L);
+        UUID id = UUID.randomUUID();
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
+        service.deleteById(id);
+        verify(databasePort, times(1)).deleteById(id);
     }
 
     @Test
     void shouldThrowExceptionWhenTryToDeleteACustomerThatNotExists() {
-        when(databasePort.existsById(1L)).thenReturn(false);
-        assertThrows(CustomerException.class, () -> service.deleteById(1L));
+        when(databasePort.existsById(any(UUID.class))).thenReturn(false);
+        assertThrows(CustomerException.class, () -> service.deleteById(UUID.randomUUID()));
     }
 
     @Test
     void shouldAddAddressToCustomer() {
         String addressId = UUID.randomUUID().toString();
-        Customer customer = createCustomer(1L);
+        Customer customer = createCustomer(UUID.randomUUID());
         Address address = new Address(addressId, null, "5",
                 null, null, null, null, true);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
-        Customer updatedCustomer = service.addAddress(1L, address);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
+        Customer updatedCustomer = service.addAddress(UUID.randomUUID(), address);
         assertEquals("5", getAddressBuildingNumber(updatedCustomer, addressId));
     }
 
@@ -119,8 +124,8 @@ class CustomerServiceTest {
         Customer customer = createCustomerWithAddress(addressId);
         Address address = new Address(addressId, null, "5",
                 null, null, null, null, true);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
-        assertThrows(CustomerException.class, () -> service.addAddress(1L, address));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
+        assertThrows(CustomerException.class, () -> service.addAddress(UUID.randomUUID(), address));
     }
 
     @Test
@@ -129,11 +134,11 @@ class CustomerServiceTest {
         Customer customer = createCustomerWithAddress(addressId);
         Address updatedAddress = new Address(addressId, null, "5",
                 null, null, null, null, true);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
         customer.updateCustomerAddress(updatedAddress);
-        Customer updatedCustomer = service.updateAddress(1L, updatedAddress);
+        Customer updatedCustomer = service.updateAddress(customer.id(), updatedAddress);
         assertEquals("5", getAddressBuildingNumber(updatedCustomer, addressId));
     }
 
@@ -150,22 +155,22 @@ class CustomerServiceTest {
     void shouldDeleteCustomerAddress() {
         String addressId = UUID.randomUUID().toString();
         Customer customer = createCustomerWithAddress(addressId);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
-        Customer updatedCustomer = service.deleteAddress(1L, addressId);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
+        Customer updatedCustomer = service.deleteAddress(UUID.randomUUID(), addressId);
         assertEquals(0, updatedCustomer.person().addresses().size());
     }
 
     @Test
     void shouldAddPhoneToCustomer() {
         String phoneId = UUID.randomUUID().toString();
-        Customer customer = createCustomer(1L);
+        Customer customer = createCustomer(UUID.randomUUID());
         Phone phone = new Phone(phoneId, 79, 999999999, true);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
-        Customer updatedCustomer = service.addPhone(1L, phone);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
+        Customer updatedCustomer = service.addPhone(UUID.randomUUID(), phone);
         assertEquals(999999999, getPhone(updatedCustomer, phoneId));
     }
 
@@ -174,11 +179,11 @@ class CustomerServiceTest {
         String phoneId = UUID.randomUUID().toString();
         Customer customer = createCustomerWithPhone(phoneId);
         Phone updatedPhone = new Phone(phoneId, 79, 999999998, true);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
         customer.updateCustomerPhone(updatedPhone);
-        Customer updatedCustomer = service.updatePhone(1L, updatedPhone);
+        Customer updatedCustomer = service.updatePhone(UUID.randomUUID(), updatedPhone);
         assertEquals(999999998, getPhone(updatedCustomer, phoneId));
     }
 
@@ -196,27 +201,27 @@ class CustomerServiceTest {
     void shouldDeleteCustomerPhone() {
         String phoneId = UUID.randomUUID().toString();
         Customer customer = createCustomerWithPhone(phoneId);
-        when(databasePort.findById(1L)).thenReturn(Optional.of(customer));
+        when(databasePort.findById(any(UUID.class))).thenReturn(Optional.of(customer));
         when(databasePort.save(any(Customer.class))).thenReturn(customer);
-        when(databasePort.existsById(1L)).thenReturn(true);
-        Customer updatedCustomer = service.deletePhone(1L, phoneId);
+        when(databasePort.existsById(any(UUID.class))).thenReturn(true);
+        Customer updatedCustomer = service.deletePhone(UUID.randomUUID(), phoneId);
         assertEquals(0, updatedCustomer.person().phones().size());
     }
 
     // region [DATA]
     private Customer createCustomerWithAddress(String addressId) {
-        Customer c = createCustomer(1L);
+        Customer c = createCustomer(UUID.randomUUID());
         c.person().addAddress(createAddress(addressId));
         return c;
     }
 
     private Customer createCustomerWithPhone(String phoneId) {
-        Customer c = createCustomer(1L);
+        Customer c = createCustomer(UUID.randomUUID());
         c.person().addPhone(craetePhone(phoneId));
         return c;
     }
 
-    private Customer createCustomer(Long id) {
+    private Customer createCustomer(UUID id) {
         Name name = new Name("Marcus", "Lima");
         Person person = new Person(name, "99999999999", "marcus@lima.com", new ArrayList<>(), new ArrayList<>());
         return new Customer(id, person, "marcus", null);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class CustomerDatabaseAdapter implements CustomerDatabasePort {
     private final CustomerMapper mapper;
 
     @Override
-    public Optional<Customer> findById(Long id) {
+    public Optional<Customer> findById(UUID id) {
         return dao.findById(id).map(mapper::toEntity);
     }
 
@@ -35,12 +36,12 @@ public class CustomerDatabaseAdapter implements CustomerDatabasePort {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         dao.deleteById(id);
     }
 
     @Override
-    public Boolean existsById(Long id) {
+    public Boolean existsById(UUID id) {
         return dao.existsById(id);
     }
 

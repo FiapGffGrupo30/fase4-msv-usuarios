@@ -4,17 +4,17 @@ import br.fiap.gff.users.application.dto.CreateCustomerDTO;
 import br.fiap.gff.users.application.dto.CreatePhoneDTO;
 import br.fiap.gff.users.application.dto.CustomerResponseDTO;
 import br.fiap.gff.users.application.dto.RequestAddressDTO;
-import br.fiap.gff.users.domain.usecases.CustomerUseCase;
-import br.fiap.gff.users.domain.entities.Customer;
 import br.fiap.gff.users.domain.entities.Address;
+import br.fiap.gff.users.domain.entities.Customer;
+import br.fiap.gff.users.domain.entities.Order;
 import br.fiap.gff.users.domain.entities.Phone;
+import br.fiap.gff.users.domain.usecases.CustomerUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.UUID;
 
 
 @RestController
@@ -32,7 +32,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponseDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<CustomerResponseDTO> getById(@PathVariable UUID id) {
         Customer c = customer.getById(id);
         return ResponseEntity.ok(CustomerResponseDTO.fromCustomer(c));
     }
@@ -45,43 +45,49 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/address")
-    public ResponseEntity<CustomerResponseDTO> addAddress(@PathVariable Long id,
-            @RequestBody RequestAddressDTO request) {
+    public ResponseEntity<CustomerResponseDTO> addAddress(@PathVariable UUID id,
+                                                          @RequestBody RequestAddressDTO request) {
         Address a = request.toAddress();
         CustomerResponseDTO response = CustomerResponseDTO.fromCustomer(customer.addAddress(id, a));
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{id}/send-order")
+    public boolean sendMessage(@PathVariable UUID id, @RequestBody Order order) {
+        customer.sendOrder(id, order);
+        return true;
+    }
+
     @PostMapping("/{id}/phone")
-    public ResponseEntity<CustomerResponseDTO> addPhone(@PathVariable Long id, @RequestBody CreatePhoneDTO request) {
+    public ResponseEntity<CustomerResponseDTO> addPhone(@PathVariable UUID id, @RequestBody CreatePhoneDTO request) {
         Phone p = request.toPhone();
         CustomerResponseDTO response = CustomerResponseDTO.fromCustomer(customer.addPhone(id, p));
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/address/{addressId}")
-    public ResponseEntity<CustomerResponseDTO> updateAddress(@PathVariable Long id,
-            @PathVariable String addressId,
-            @RequestBody RequestAddressDTO request) {
+    public ResponseEntity<CustomerResponseDTO> updateAddress(@PathVariable UUID id,
+                                                             @PathVariable String addressId,
+                                                             @RequestBody RequestAddressDTO request) {
         Address a = request.toAddress(addressId);
         CustomerResponseDTO response = CustomerResponseDTO.fromCustomer(customer.updateAddress(id, a));
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         customer.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}/address/{addressId}")
-    public ResponseEntity<CustomerResponseDTO> deleteAddress(@PathVariable Long id, @PathVariable String addressId) {
+    public ResponseEntity<CustomerResponseDTO> deleteAddress(@PathVariable UUID id, @PathVariable String addressId) {
         CustomerResponseDTO response = CustomerResponseDTO.fromCustomer(customer.deleteAddress(id, addressId));
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/phone/{phoneId}")
-    public ResponseEntity<CustomerResponseDTO> deletePhone(@PathVariable Long id, @PathVariable String phoneId) {
+    public ResponseEntity<CustomerResponseDTO> deletePhone(@PathVariable UUID id, @PathVariable String phoneId) {
         CustomerResponseDTO response = CustomerResponseDTO.fromCustomer(customer.deletePhone(id, phoneId));
         return ResponseEntity.ok(response);
     }

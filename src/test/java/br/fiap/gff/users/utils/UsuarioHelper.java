@@ -11,6 +11,7 @@ import br.fiap.gff.users.domain.entities.Phone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UsuarioHelper {
     public static CreateCustomerDTO gerarUsuarioRequest() {
@@ -20,11 +21,11 @@ public class UsuarioHelper {
                                         "11111111111",
                                         "fulano@hotmail.com");
     }
-    public static Customer createCustomer(long id) {
+    public static Customer createCustomer(UUID id) {
         return new Customer(id, createPerson(), "fulano123", "12312432242" );
     }
 
-    public static Customer createCustomerWithoutAddress(long id) {
+    public static Customer createCustomerWithoutAddress(UUID id) {
         return new Customer(id, createPersonWithoutAddress(), "fulano123", "12312432242" );
     }
 

@@ -3,9 +3,10 @@ package br.fiap.gff.users.application.dto;
 import br.fiap.gff.users.domain.entities.Customer;
 
 import java.util.List;
+import java.util.UUID;
 
 public record CustomerResponseDTO(
-        Long id,
+        UUID id,
         String username,
         String fullName,
         String document,
